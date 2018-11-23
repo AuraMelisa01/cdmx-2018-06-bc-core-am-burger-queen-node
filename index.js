@@ -1,36 +1,55 @@
-const express = require('express');
+'use strict'
+
 const mongoose = require('mongoose');
-const config = require('./config');
-const authMiddleware = require('./middleware/auth');
-const errorHandler = require('./middleware/error');
-const routes = require('./routes');
-const pkg = require('./package.json');
+const app = require('./app');
+const port = 3800;
+
+//Conexion Database
+mongoose.Promise = global.Promise;
+mongoose.connect('mongodb://localhost:27017/burger_Queen', {useNewUrlParser: true})
+  .then(() => {
+    console.log('La conexión a la base de datos burger_Queen se ha realizado correctamente.');
+    //Crear servidor
+    app.listen(port, () => {
+      console.log("Servidor corriendo en http://localhost:3800");
+    });
+  })
+  .catch(err => console.log(err));
 
 
-const { port, mongoUrl, secret } = config;
-const app = express();
+// const express = require('express');
+// const mongoose = require('mongoose');
+// const config = require('./config');
+// const authMiddleware = require('./middleware/auth');
+// const errorHandler = require('./middleware/error');
+// const routes = require('./routes');
+// const pkg = require('./package.json');
 
 
-// Conectar aplicación a MongoDB
-mongoose.connect(mongoUrl, { useNewUrlParser: true });
+// const { port, mongoUrl, secret } = config;
+// const app = express();
 
 
-app.set('config', config);
-app.set('pkg', pkg);
+// // Conectar aplicación a MongoDB
+// mongoose.connect(mongoUrl, { useNewUrlParser: true });
 
 
-app.use(express.json());
-app.use(authMiddleware(secret));
+// app.set('config', config);
+// app.set('pkg', pkg);
 
 
-// Registrar rutas
-routes(app, (err) => {
-  if (err) {
-    throw err;
-  }
+// app.use(express.json());
+// app.use(authMiddleware(secret));
 
-  // Registro de "middleware" que maneja posibles errores
-  app.use(errorHandler);
 
-  app.listen(port, () => console.log(`App listening on port ${port}`));
-});
+// // Registrar rutas
+// routes(app, (err) => {
+//   if (err) {
+//     throw err;
+//   }
+
+//   // Registro de "middleware" que maneja posibles errores
+//   app.use(errorHandler);
+
+//   app.listen(port, () => console.log(`App listening on port ${port}`));
+// });
